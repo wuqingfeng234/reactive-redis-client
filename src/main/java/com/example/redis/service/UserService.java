@@ -30,10 +30,9 @@ public class UserService {
     }
 
     private Mono<User> getUserFromFirebase(String userId) {
-        String key = USER_KEY_PREFIX + userId;
         log.info("get user from firebase ,user id is {} .", userId);
         return Mono.just(new User(userId, "mock", 8L, "met"))
-                .flatMap(this::saveUser)
-                .flatMap(status -> opsForValue.get(key));
+                .doOnSuccess(this::saveUser)
+                .retry(3);
     }
 }
